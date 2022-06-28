@@ -2,84 +2,84 @@ version: '3'
 services:
 
   #PHP Service
-  its-rest-api-app:
-    image: its-rest-api-app
+  mrgabricavi-laravel-app:
+    image: mrgabricavi-laravel-app
     build:
       context: .
       dockerfile: Dockerfile-dev.dockerfile
-    container_name: its-rest-api-app
+    container_name: mrgabricavi-laravel-app
     restart: unless-stopped
     tty: true
     depends_on:
-      - its-rest-api-db
-      - its-rest-api-redis
+      - mrgabricavi-laravel-db
+      - mrgabricavi-laravel-redis
     ports:
-      - "8080:80"
+      - "8000:80"
     environment:
-      SERVICE_NAME: its-rest-api-app
+      SERVICE_NAME: mrgabricavi-laravel-app
       SERVICE_TAGS: dev
-      PHP_IDE_CONFIG: "serverName=fpm-its-rest-api-app"
+      PHP_IDE_CONFIG: "serverName=fpm-mrgabricavi-laravel-app"
     working_dir: /var/www
     volumes:
       - ./:/var/www:delegated
       - ./_devops/local/docker/php/php-dev.ini:/etc/php8/conf.d/custom.ini:delegated
 
   #PostgresSQL Service
-  its-rest-api-db:
+  mrgabricavi-laravel-db:
     image: postgres
-    container_name: its-rest-api-db
+    container_name: mrgabricavi-laravel-db
     restart: unless-stopped
     tty: true
     environment:
       POSTGRES_PASSWORD: root
-      POSTGRES_USER: its-rest-api-db
-      POSTGRES_DB: its-rest-api-db
+      POSTGRES_USER: mrgabricavi-laravel-db
+      POSTGRES_DB: mrgabricavi-laravel-db
       SERVICE_TAGS: dev
       SERVICE_NAME: postgres
     volumes:
-      - its_rest_api_dbdata_postgres:/var/lib/postgresql/data
+      - mrgabricavi_laravel_dbdata_postgres:/var/lib/postgresql/data
       - ./_devops/local/docker/postgres/dump_parking:/var/tmp/db_dumps:delegated
 
   #PG Admin Service
-  its-rest-api-pgadmin:
+  mrgabricavi-laravel-pgadmin:
     image: dpage/pgadmin4
     restart: unless-stopped
     tty: true
     depends_on:
-      - its-rest-api-db
+      - mrgabricavi-laravel-db
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@pg.io
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - 8076:80
     volumes:
-      - its_rest_api_db_pgadmin_data:/var/lib/pgadmin
+      - mrgabricavi_laravel_db_pgadmin_data:/var/lib/pgadmin
 
   #Redis Service
-  its-rest-api-redis:
+  mrgabricavi-laravel-redis:
     image: redis:alpine
-    container_name: its-rest-api-redis
+    container_name: mrgabricavi-laravel-redis
     restart: unless-stopped
     command: redis-server --requirepass redisPass#123456
     tty: true
 
   #Redis Gui
-  its-rest-api-redis-gui:
+  mrgabricavi-laravel-redis-gui:
     image: rediscommander/redis-commander
-    container_name: its-rest-api-redis-gui
+    container_name: mrgabricavi-laravel-redis-gui
     restart: unless-stopped
     tty: true
     depends_on:
-      - its-rest-api-redis
+      - mrgabricavi-laravel-redis
     ports:
       - "8081:8081"
     environment:
-      - REDIS_HOST=its-rest-api-redis
+      - REDIS_HOST=mrgabricavi-laravel-redis
       - REDIS_PASSWORD=redisPass#123456
 
 #Volumes
 volumes:
-  its_rest_api_dbdata_postgres:
+  mrgabricavi_laravel_dbdata_postgres:
     driver: local
-  its_rest_api_db_pgadmin_data:
+  mrgabricavi_laravel_db_pgadmin_data:
     driver: local
